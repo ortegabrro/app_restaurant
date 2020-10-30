@@ -4,7 +4,15 @@ import (
 	"fmt"
 )
 
-var buyers = buyersList{
+type buyer struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+type buyers []buyer
+
+var buyersList = buyers{
 	{
 		ID:   1,
 		Name: "Andres",
