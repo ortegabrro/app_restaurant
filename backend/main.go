@@ -1,25 +1,33 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
-type buyer struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
-type buyers []buyer
-
-var buyersList = buyers{
-	{
-		ID:   1,
-		Name: "Andres",
-		Age:  28,
-	},
-}
+var buyers []buyer
+var products []product
+var ctx = context.Background()
 
 func main() {
-	fmt.Print("Hello world")
+
+	//dg, cancel := getDgraphClient()
+	//defer cancel()
+
+	//Crear Enrutador con chi
+	//:=Inferir el tipo de dato
+	r := chi.NewRouter()
+	//Mediador
+	r.Use(middleware.Logger)
+	//Subrutas
+	r.Get("/", index)
+	r.Get("/load", load)
+	r.Get("/products", getProducts)
+	//r.Get("/load", load(dg))
+	//r.Get("/buyers", getBuyers(dg))
+	//Inicializar servidor
+	http.ListenAndServe(":3000", r)
 }
