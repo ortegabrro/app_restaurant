@@ -5,41 +5,77 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/dgraph-io/dgo"
 )
 
 /*
 * w: Respuesta que se le da al usuario servidor->cliente
 * r: Peticion del usuario= cliente->servidor
  */
-func index(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("welcome Hello World"))
-}
-
-func getBuyers(dgc *dgo.Dgraph) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		q := `
-	{
-		Buyers(func: has(id)) {
-			id
-			age
-			name
-		}
-	}
-	`
-		res, err := dgc.NewTxn().Query(ctx, q)
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			fmt.Fprintf(w, "%s\n", res.Json)
-		}
-
-	}
-}
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
 	//Enviar respuesta en formato Json
 	json.NewEncoder(w).Encode(products)
+}
+
+func getTransactions(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(transactions)
+}
+
+func getBuyers(w http.ResponseWriter, r *http.Request) {
+	dg, cancel := getDgraphClient()
+	defer cancel()
+	q := `
+		{
+			var(func:has(buyerid)) {
+			  res as buyerid
+			}
+			all(func: has (id)) @filter (eq(id,val(res)))
+			{
+			   id
+			   name
+			   age
+			}
+		}
+	`
+
+	res, err := dg.NewTxn().Query(ctx, q)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Fprintf(w, "%s\n", res.Json)
+	}
+}
+
+func getBuyer(w http.ResponseWriter, r *http.Request) {
+	var idbuyer string
+	err := json.NewDecoder(r.Body).Decode(&idbuyer)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Println(res.Date)
+	//idbuyer := chi.URLParam(r, "idbuyer")
+	dg, cancel := getDgraphClient()
+	defer cancel()
+	q := `
+	query Me($idbuyer: string)
+	{
+		var(func:has(ip)) @filter (eq(buyerid,$idbuyer))
+		{
+			res as ip
+		}
+			equalip(func: eq(ip, val(res))) {
+				buyerid
+				ip
+			}
+	}
+	`
+	variables := make(map[string]string)
+	variables["$idbuyer"] = idbuyer
+	res, err := dg.NewTxn().QueryWithVars(ctx, q, variables)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Fprintf(w, "%s\n", res.Json)
+	}
 }
