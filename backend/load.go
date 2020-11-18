@@ -26,8 +26,8 @@ func load(w http.ResponseWriter, r *http.Request) {
 	loadBuyers()
 	loadProducts()
 	loadTransactions(d)
-	fmt.Fprintf(w, "%s\n", "Data uploaded")
-	//mutation(w, r)
+	//fmt.Fprintf(w, "%s\n", "Data uploaded")
+	mutation(w, r)
 }
 
 func consume(dir string) *http.Response {

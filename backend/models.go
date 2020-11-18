@@ -26,3 +26,7 @@ type transaction struct {
 type date struct {
 	Date string `json:"date"`
 }
+
+type id struct {
+	ID string `json:"id"`
+}

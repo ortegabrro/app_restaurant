@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid>
-    <b-table striped hover :items="items"></b-table>
+  <b-container id="content" fluid>
+    <b-table sticky-header="500px" striped hover :items="items"></b-table>
   </b-container>
 </template>
 
@@ -18,7 +18,7 @@ export default {
       axios
         .get("http://localhost:3000/buyers")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.items;
         })
         .catch((error) => {
           console.error(error);
@@ -30,3 +30,8 @@ export default {
   },
 };
 </script>
+<style>
+#content {
+  margin-top: 40px;
+}
+</style>

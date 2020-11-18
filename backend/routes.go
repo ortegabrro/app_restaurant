@@ -29,7 +29,7 @@ func getBuyers(w http.ResponseWriter, r *http.Request) {
 			var(func:has(buyerid)) {
 			  res as buyerid
 			}
-			all(func: has (id)) @filter (eq(id,val(res)))
+			items(func: has (id)) @filter (eq(id,val(res)))
 			{
 			   id
 			   name
@@ -47,31 +47,32 @@ func getBuyers(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBuyer(w http.ResponseWriter, r *http.Request) {
-	var idbuyer string
+	var idbuyer id
 	err := json.NewDecoder(r.Body).Decode(&idbuyer)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println(res.Date)
+	fmt.Println(idbuyer.ID)
+
 	//idbuyer := chi.URLParam(r, "idbuyer")
 	dg, cancel := getDgraphClient()
 	defer cancel()
 	q := `
-	query Me($idbuyer: string)
-	{
-		var(func:has(ip)) @filter (eq(buyerid,$idbuyer))
+		query Me($idbuyer: string)
 		{
-			res as ip
-		}
-			equalip(func: eq(ip, val(res))) {
-				buyerid
-				ip
+			var(func:has(ip)) @filter (eq(buyerid,$idbuyer))
+			{
+				res as ip
 			}
-	}
-	`
+				equalip(func: eq(ip, val(res))) {
+					buyerid
+					ip
+				}
+		}
+		`
 	variables := make(map[string]string)
-	variables["$idbuyer"] = idbuyer
+	variables["$idbuyer"] = idbuyer.ID
 	res, err := dg.NewTxn().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		log.Fatal(err)
