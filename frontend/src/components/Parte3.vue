@@ -35,6 +35,7 @@ export default {
       axios
         .post("http://localhost:3000/buyer", { id: this.id })
         .then((response) => {
+          this.compras= response.data.shops;
           this.ips = response.data.equalip;
         })
         .catch((error) => {

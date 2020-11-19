@@ -69,6 +69,13 @@ func getBuyer(w http.ResponseWriter, r *http.Request) {
 					buyerid
 					ip
 				}
+
+				shops(func:has(buyerid)) @filter (eq(buyerid,$idbuyer))
+				{
+					buyerid
+					ip
+        			productsids
+				}
 		}
 		`
 	variables := make(map[string]string)
